@@ -1,18 +1,49 @@
 const std = @import("std");
 
-// pub fn peek(content: []const u8,index : usize) ?u8{
-//     if(index < content.len){
-//         return content[index];
-//     }else{
-//         return null;
-//     }
-// }
-//
-// pub fn consume(current_position:u8,expression:[]const u8,index:*usize) void{
-//     if (expression == current_position){
-//         index+=1;
-//     }
-// }
+const Parser = struct {
+    content: []const u8,
+    cursor : u8,
+
+    fn peek(self : *const @This()) ?u8{
+        if (self.cursor < self.content.len) return self.content[self.cursor];
+        return null;
+    }
+
+    fn consume(self : *@This()) ?u8{
+        const char = self.peek();
+        if(char != null){
+            self.cursor+=1;
+        }
+        return char;
+    }
+
+    fn parse_number(self : *@This()) ?i32{
+       var result:i32 = 0;
+       while(self.peek()) |char|{
+            if(char < '0' or char > '9'){
+                break;
+            }
+            result = result * 10 + (char - '0');
+            _ = self.consume();
+       }
+
+       return result;
+    }
+
+    fn parse_addition(self :*@This()) ?i32{
+        var result:i32 = self.parse_number().?;
+        while(self.peek()) |char|{
+            if(char == '+'){
+                _ = self.consume();
+                result += self.parse_number().?;
+            }else{
+                break;
+            }
+        }
+
+        return result;
+    }
+};
 
 pub fn main(init: std.process.Init) !void {
     const io = init.io;
@@ -22,27 +53,10 @@ pub fn main(init: std.process.Init) !void {
     const dir = std.Io.Dir.cwd();
     const content = try dir.readFile(io, "math/source.txt", &file_buffer);
 
-    //We Try Parsing 1st
-    var index: usize = 0;
-    var expression_found: bool = false;
-    var left_text: []const u8 = undefined;
-    var right_text: []const u8 = undefined;
-    var left: i32 = 0;
-    var right: i32 = 0;
-    while (index < content.len) : (index += 1) {
-        if (content[index] == '+') {
-            expression_found = true;
-            break;
-        }
-    }
-    if (expression_found) {
-        left_text = std.mem.trim(u8, content[0..index], " \t\n\r");
-        right_text = std.mem.trim(u8, content[index + 1 ..], " \t\n\r");
-
-        left = try std.fmt.parseInt(i32, left_text, 10);
-        right = try std.fmt.parseInt(i32, right_text, 10);
-        std.debug.print("The Result Is : {d}", .{left + right});
-    } else {
-        std.debug.print("Please Provide It", .{});
-    }
+    var parser = Parser{
+        .cursor = 0,
+        .content = content
+    };
+    const result = parser.parse_addition();
+    std.debug.print("Here The Result : {any}",.{result});
 }
