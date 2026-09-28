@@ -21,7 +21,7 @@ The greater the binding power, the stronger the binding effect an operator has o
 * Operator `+` and `-` = Have 10 Binding Power
 * Operator `*` and `/` = Have 20 Binding Power
 
-### Token: NUD and LED
+#### Token: NUD and LED
 
 Pratt parsing divides the way we process tokens into two main categories: **NUD** (Null Denotation) and **LED** (Left Denotation).
 
