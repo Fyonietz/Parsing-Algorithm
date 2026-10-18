@@ -34,8 +34,8 @@ pub const Lexer = struct {
                     );
 
                     return .{
-                        .Value = 10,
-                        .Power = char,
+                        .Value = char,
+                        .Power = 10,
                     };
                 }
                 if (char >= '0' and char <= '9') {
@@ -47,11 +47,10 @@ pub const Lexer = struct {
                     continue;
                 }
 
-                // Anything else
                 print("Unknown character: {c}\n", .{char});
                 break;
             } else {
-                print("Null Value\n", .{});
+                print("Null Value Behavior! Break!\n", .{});
                 break;
             }
         }

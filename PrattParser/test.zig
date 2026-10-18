@@ -1,6 +1,7 @@
 const main = @import("main.zig");
 const testing = @import("std").testing;
 const Lexer = main.Lexer;
+const Operator = main.Operator;
 
 fn runLexerTest(
     cursor: usize, 
@@ -17,13 +18,25 @@ fn runLexerTest(
 
 
 test "peek" {
-    try runLexerTest(0, struct {
-        fn call(l: *Lexer) u8 { return l.peek().?; }
-    }.call, @as(u8, '2'));
+    try runLexerTest(
+        0, 
+        struct {
+            fn call(l: *Lexer) u8 { 
+                return l.peek().?; 
+            }
+        }.call, 
+        @as(u8, '2')
+    );
 }
 
-test "power" {
-    try runLexerTest(2, struct {
-        fn call(l: *Lexer) i32 { return l.power(); }
-    }.call, @as(i32, 10));
+test "find operator" {
+    try runLexerTest(
+        2, 
+        struct {
+            fn call(l: *Lexer) Operator { 
+                return l.find_operator(); 
+                }
+            }.call, 
+        Operator{.Power = 10,.Value = '+'}
+    );
 }
