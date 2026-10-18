@@ -1,0 +1,96 @@
+zig
+```
+const content: []const u8 = ""; // Empty input
+const content: []const u8 = "   "; // Whitespace only
+const content: []const u8 = "\t\t"; // Tabs only
+const content: []const u8 = "\n\n"; // Newlines only
+const content: []const u8 = "  2 + 3"; // Leading whitespace
+const content: []const u8 = "2 + 3  "; // Trailing whitespace
+const content: []const u8 = "2\t+\n3"; // Mixed whitespace
+
+const content: []const u8 = "42"; // Single number
+const content: []const u8 = "0"; // Zero
+const content: []const u8 = "007"; // Leading zeros
+const content: []const u8 = "999999999999999999999999"; // Very large integer
+const content: []const u8 = "3.14"; // Decimal number
+const content: []const u8 = ".5"; // Leading decimal point
+const content: []const u8 = "5."; // Trailing decimal point
+const content: []const u8 = "3.14.15"; // Multiple decimal points
+const content: []const u8 = "1e10"; // Scientific notation
+const content: []const u8 = "1e-3"; // Scientific notation with negative exponent
+
+const content: []const u8 = "2 + 3"; // Simple addition
+const content: []const u8 = "2 * 3"; // Simple multiplication
+const content: []const u8 = "6 / 2"; // Simple division
+const content: []const u8 = "7 % 3"; // Modulo operation
+
+const content: []const u8 = "2 + 3 * 4"; // Operator precedence
+const content: []const u8 = "2 * 3 + 4"; // Reverse operator precedence
+const content: []const u8 = "8 / 4 * 2"; // Same precedence, left associativity
+const content: []const u8 = "2 + 3 + 4"; // Chained addition
+const content: []const u8 = "2 * 3 * 4"; // Chained multiplication
+const content: []const u8 = "8 / 2 + 3 * 4 % 5"; // Mixed operators
+const content: []const u8 = "1 + 2 * 3 / 4 % 5 * 6"; // Complex precedence
+
+const content: []const u8 = "* 2"; // Missing left operand
+const content: []const u8 = "2 +"; // Missing right operand
+const content: []const u8 = "+"; // Operator only
+const content: []const u8 = "2 + * 3"; // Consecutive different operators
+const content: []const u8 = "2 + + 3"; // Repeated addition operators
+const content: []const u8 = "2 * * 3"; // Repeated multiplication operators
+const content: []const u8 = "2 3"; // Adjacent numbers without an operator
+const content: []const u8 = "2 3 + 4"; // Missing operator between operands
+const content: []const u8 = "2 + 3 *"; // Trailing operator
+const content: []const u8 = "/ 2 + 3"; // Leading operator
+const content: []const u8 = "2 + / * 3"; // Invalid operator sequence
+
+const content: []const u8 = "10 / 0"; // Division by zero
+const content: []const u8 = "10 % 0"; // Modulo by zero
+const content: []const u8 = "999999999999999999 + 1"; // Integer overflow
+const content: []const u8 = "1e308 * 1e308"; // Floating-point overflow
+const content: []const u8 = "0.1 + 0.2"; // Floating-point precision loss
+const content: []const u8 = "1e-308 / 1e308"; // Floating-point underflow
+
+const content: []const u8 = "x"; // Single identifier
+const content: []const u8 = "x + 2"; // Identifier with number
+const content: []const u8 = "x + y * z"; // Multiple identifiers
+const content: []const u8 = "value123 + 4"; // Identifier containing digits
+const content: []const u8 = "_value + 2"; // Identifier starting with underscore
+const content: []const u8 = "123abc + 4"; // Number followed by letters
+const content: []const u8 = "unknown_variable + 1"; // Unknown identifier
+const content: []const u8 = "true + 1"; // Reserved keyword used as operand
+
+const content: []const u8 = "true"; // Boolean literal
+const content: []const u8 = "true == false"; // Boolean equality
+const content: []const u8 = "2 < 3"; // Comparison operator
+const content: []const u8 = "2 == 2"; // Equality operator
+const content: []const u8 = "true && false"; // Logical AND
+const content: []const u8 = "true || false"; // Logical OR
+const content: []const u8 = "5 & 3"; // Bitwise AND
+const content: []const u8 = "5 | 3"; // Bitwise OR
+const content: []const u8 = "1 << 3"; // Bitwise shift
+
+const content: []const u8 = "2 @ 3"; // Unknown character
+const content: []const u8 = "2 ; 3"; // Invalid punctuation
+const content: []const u8 = "2, 3"; // Unexpected comma
+const content: []const u8 = "2 : 3"; // Unexpected colon
+const content: []const u8 = "\"hello\""; // String literal
+const content: []const u8 = "2 + π"; // Unicode identifier or character
+const content: []const u8 = "2\x00+3"; // Embedded null byte
+
+const content: []const u8 = "1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10"; // Long expression
+const content: []const u8 = "1+2+3+4+5+6+7+8+9+10"; // Long expression without spaces
+const content: []const u8 = "123456789012345678901234567890"; // Extremely long number
+const content: []const u8 = "1 + 2 * 3 + 4 * 5 + 6"; // Alternating operator precedence
+const content: []const u8 = "2+3*4"; // No spaces between tokens
+const content: []const u8 = "12 34"; // Whitespace inside a potential number
+const content: []const u8 = "2 + 3\r"; // Trailing carriage return
+const content: []const u8 = "2 +\r\n3"; // Windows-style newline
+
+const content: []const u8 = "   +   "; // Whitespace surrounding an invalid expression
+const content: []const u8 = "2 +   "; // Operator followed by whitespace only
+const content: []const u8 = "2 + 3; 4 * 5"; // Multiple expressions or unexpected semicolon
+const content: []const u8 = "2 + 3 // comment"; // Line comment
+const content: []const u8 = "2 + 3 /* comment"; // Unterminated block comment
+const content: []const u8 = "2 /* comment */ + 3"; // Comment between tokens
+```
