@@ -8,8 +8,10 @@ fn runLexerTest(
     comptime action: anytype, 
     expected: anytype
 ) !void {
-    const content: []const u8 = "2 + 3 * 4 + 5";
-    var lexer = Lexer{ .cursor = cursor, .content = content };
+
+    var buffer:[1024]u8 = undefined;
+    const content : []const u8 = "2+3*4";
+    var lexer = Lexer{ .cursor = cursor, .content = content,.buffer = &buffer };
     
     const out = action(&lexer); 
     
@@ -31,7 +33,7 @@ test "peek" {
 
 test "find operator" {
     try runLexerTest(
-        2, 
+        1, 
         struct {
             fn call(l: *Lexer) Operator { 
                 return l.find_operator(); 
@@ -39,4 +41,14 @@ test "find operator" {
             }.call, 
         Operator{.Power = 10,.Value = '+'}
     );
+}
+
+test "assign buffer"{
+    try runLexerTest(0,
+        struct {
+            fn call(l: *Lexer) bool { 
+                return l.assign_buffer(); 
+                }
+            }.call,
+        true);
 }
