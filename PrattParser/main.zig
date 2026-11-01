@@ -42,28 +42,25 @@ pub const Lexer = struct {
 
         return true;
     }
+
     //TODO : Implement The Strongest Operator Arithmetics
     pub fn find_operator(self:*@This()) Operator{
         var i : usize = 0;
         while (i < self.content.len) : (i += 1) {
             if (self.peek()) |char| {
-                 print("Char: '{c}', ASCII: {d}\n", .{ char, char });
                 if (char == '+' or char == '-') {
-                    print(
-                        "A Operator! On Iteration Number: {d}\n",
-                        .{i},
-                    );
-
                     return .{
                         .Value = char,
                         .Power = 10,
                     };
                 }
+                if (char == '*' or char == '/') {
+                    return .{
+                        .Value = char,
+                        .Power = 20,
+                    };
+                }
                 if (char >= '0' and char <= '9') {
-                    print(
-                        "A Number! On Iteration Number: {d}\n",
-                        .{i},
-                    );
                     self.move();
                     continue;
                 }
@@ -88,7 +85,6 @@ pub fn main() !void{
     var buffer:[1024]u8 = undefined;
     const content : []const u8 = "2+3*4";
     var lexer:Lexer = .{.cursor = 0,.content = content,.buffer = &buffer};
-    const out = lexer.peek();
     _ = lexer.find_operator();
     _ = lexer.assign_buffer();
     for(buffer)|char|{
@@ -96,6 +92,5 @@ pub fn main() !void{
             print("Token : {c}\n",.{char});
         }
     }
-    print("Content : {c}\n",.{out.?});
 }
 
