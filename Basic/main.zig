@@ -62,11 +62,49 @@ pub const Lexer = struct {
     }
 };
 
+
+const Parser = struct {
+    token :[]const Token,
+    cursor : usize,
+
+   pub fn peek(self : *@This()) ?Token {
+       if(self.cursor < self.token.len){
+           return self.token[self.cursor];
+       }
+       return null;
+   }
+
+  pub fn advance(self : *@This()) void{
+      if(self.cursor < self.token.len){
+          self.cursor += 1;
+      }
+  }
+  pub fn print_peek_advance(self:*@This()) void{
+      if(self.peek())|token|{
+          print("[PARSER] : {s} ({d})",.{@tagName(token.type),token.value});
+          self.advance();
+      }
+  }
+};
+
 pub fn main() !void {
     const source: []const u8 = "12 + 4";
-    const i: usize = 0;
-    var lexer: Lexer = .{ .content = source, .cursor = i };
+    const lexer_cursor: usize = 0;
+    var lexer: Lexer = .{ .content = source, .cursor = lexer_cursor };
+    const MAX_TOKENS = 1024;
+    var token_buffer:[MAX_TOKENS]Token = undefined;
+    var token_count:usize = 0;
+    var parser : Parser = undefined;
+    parser.cursor = 0;
     while(lexer.next_token())|token|{
-        print("{s} ({d})", .{ @tagName(token.type), token.value });
+        if(token_count >= MAX_TOKENS ){
+            break;
+        }
+        token_buffer[token_count] = token;
+        token_count += 1;
+
+        const Tokens:[]const Token = token_buffer[0..token_count];
+        parser.token = Tokens;
+        parser.print_peek_advance();
     }
 }
