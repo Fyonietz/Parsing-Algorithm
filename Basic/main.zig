@@ -86,6 +86,16 @@ const Parser = struct {
       }
   }
   //TODO : Implement Factor function
+  pub fn factor(self:*@This()) !i32{
+      if(self.peek())|char|{
+        if(char.type == .Number){
+              self.advance();
+              print("Found a number with value of : {d}",.{char.value});
+              return char.value;
+          }
+      }
+      return error.UnexpectedToken;
+  }
 };
 
 pub fn main() !void {
@@ -106,6 +116,5 @@ pub fn main() !void {
 
         const Tokens:[]const Token = token_buffer[0..token_count];
         parser.token = Tokens;
-        parser.print_peek_advance();
     }
 }
