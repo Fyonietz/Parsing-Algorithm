@@ -85,7 +85,6 @@ const Parser = struct {
           self.advance();
       }
   }
-  //TODO : Implement Factor function
   pub fn factor(self:*@This()) !i32{
       if(self.peek())|char|{
         if(char.type == .Number){
@@ -96,25 +95,48 @@ const Parser = struct {
       }
       return error.UnexpectedToken;
   }
+  
+  pub fn term(self:*@This()) !i32{
+      var result = try self.factor();
+      if(self.peek())|char|{
+          if(char.type == .Plus){
+              self.advance();
+              const right = try self.factor();
+              result += right;
+          }
+          return error.NotAPrecedence;
+      }
+      return result;
+  }
 };
 
 pub fn main() !void {
-    const source: []const u8 = "12 + 4";
-    const lexer_cursor: usize = 0;
-    var lexer: Lexer = .{ .content = source, .cursor = lexer_cursor };
+    const source: []const u8 = "12 + 4 + 4";
+
+    var lexer: Lexer = .{
+        .content = source,
+        .cursor = 0,
+    };
+
     const MAX_TOKENS = 1024;
-    var token_buffer:[MAX_TOKENS]Token = undefined;
-    var token_count:usize = 0;
-    var parser : Parser = undefined;
-    parser.cursor = 0;
-    while(lexer.next_token())|token|{
-        if(token_count >= MAX_TOKENS ){
+    var token_buffer: [MAX_TOKENS]Token = undefined;
+    var token_count: usize = 0;
+
+    var parser: Parser = undefined;
+
+    while (lexer.next_token()) |token| {
+        if (token_count >= MAX_TOKENS) {
             break;
         }
+
         token_buffer[token_count] = token;
         token_count += 1;
-
-        const Tokens:[]const Token = token_buffer[0..token_count];
-        parser.token = Tokens;
     }
+
+    parser.cursor = 0;
+    parser.token = token_buffer[0..token_count];
+
+    const res = try parser.term();
+
+    print("The Result is : {d}\n", .{res});
 }
