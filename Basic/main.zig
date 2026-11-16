@@ -4,7 +4,9 @@ const std = @import("std");
 const print = std.log.debug;
 const err = std.log.err;
 
-pub const TokenType = enum { Number, Plus, eof, whitespace };
+pub const Precedence = enum{ Plus, Minus, Star, Slash};
+
+pub const TokenType = union(enum) { Number, Operator : Precedence, eof, whitespace };
 
 pub const Token = struct { type: TokenType, value: i32 };
 
@@ -53,7 +55,11 @@ pub const Lexer = struct {
             }
             if (char == '+') {
                 self.advance();
-                return .{ .type = .Plus, .value = 0 };
+                return .{ .type = .{.Operator = .Plus}, .value = 0 };
+            }
+            if (char == '*') {
+                self.advance();
+                return .{ .type = .{.Operator = .Star}, .value = 0 };
             }
             break;
         }
@@ -99,19 +105,30 @@ const Parser = struct {
   pub fn term(self:*@This()) !i32{
       var result = try self.factor();
       if(self.peek())|char|{
-          if(char.type == .Plus){
-              self.advance();
-              const right = try self.factor();
-              result += right;
+          switch(char.type){
+              .Operator => |op| {
+                  if(op == .Plus){
+                      self.advance();
+                      const right = try self.factor();
+                      result += right;
+                  }
+                  if(op == .Star){
+                      self.advance();
+                      const right = try self.factor();
+                      result = result * right;
+                  }
+              },
+              else => {
+                  return error.NotAPrecedence;
+              }
           }
-          return error.NotAPrecedence;
       }
       return result;
   }
 };
 
 pub fn main() !void {
-    const source: []const u8 = "12 + 4 + 4";
+    const source: []const u8 = "12 * 5";
 
     var lexer: Lexer = .{
         .content = source,
@@ -137,6 +154,5 @@ pub fn main() !void {
     parser.token = token_buffer[0..token_count];
 
     const res = try parser.term();
-
     print("The Result is : {d}\n", .{res});
 }
