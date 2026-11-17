@@ -57,6 +57,10 @@ pub const Lexer = struct {
                 self.advance();
                 return .{ .type = .{.Operator = .Plus}, .value = 0 };
             }
+            if (char == '-') {
+                self.advance();
+                return .{ .type = .{.Operator = .Minus}, .value = 0 };
+            }
             if (char == '*') {
                 self.advance();
                 return .{ .type = .{.Operator = .Star}, .value = 0 };
@@ -117,6 +121,14 @@ const Parser = struct {
                       const right = try self.factor();
                       result = result * right;
                   }
+                  if(op == .Minus){
+                      self.advance();
+                      const right = try self.factor();
+                      result = result - right;
+                      if(result < 0){
+                          return error.CantHandleNegativeValue;
+                      }
+                  }
               },
               else => {
                   return error.NotAPrecedence;
@@ -128,7 +140,7 @@ const Parser = struct {
 };
 
 pub fn main() !void {
-    const source: []const u8 = "12 * 5";
+    const source: []const u8 = "12 - 13";
 
     var lexer: Lexer = .{
         .content = source,
@@ -153,6 +165,15 @@ pub fn main() !void {
     parser.cursor = 0;
     parser.token = token_buffer[0..token_count];
 
-    const res = try parser.term();
-    print("The Result is : {d}\n", .{res});
+    if(parser.term()) |res|{
+        print("The Result is : {d}\n", .{res});
+    }else |errs| switch (errs) {
+        error.CantHandleNegativeValue =>{
+            print("Can't Handle Negative Value",.{});
+        },
+        error.NotAPrecedence =>{
+            print("Please Provide Precedence (-,+,*,/)",.{});
+        },
+        else => {}
+    }
 }
