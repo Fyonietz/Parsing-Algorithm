@@ -65,6 +65,10 @@ pub const Lexer = struct {
                 self.advance();
                 return .{ .type = .{.Operator = .Star}, .value = 0 };
             }
+            if (char == '/') {
+                self.advance();
+                return .{ .type = .{.Operator = .Slash}, .value = 0 };
+            }
             break;
         }
 
@@ -129,6 +133,11 @@ const Parser = struct {
                           return error.CantHandleNegativeValue;
                       }
                   }
+                  if(op == .Slash){
+                      self.advance();
+                      const right = try self.factor();
+                      result = @divTrunc(result,right);
+                  }
               },
               else => {
                   return error.NotAPrecedence;
@@ -140,7 +149,7 @@ const Parser = struct {
 };
 
 pub fn main() !void {
-    const source: []const u8 = "12 - 13";
+    const source: []const u8 = "12 / 6";
 
     var lexer: Lexer = .{
         .content = source,
