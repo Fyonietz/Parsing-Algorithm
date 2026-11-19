@@ -103,7 +103,7 @@ const Parser = struct {
       if(self.peek())|char|{
         if(char.type == .Number){
               self.advance();
-              print("Found a number with value of : {d}",.{char.value});
+              // print("Found a number with value of : {d}",.{char.value});
               return char.value;
           }
       }
@@ -112,26 +112,13 @@ const Parser = struct {
   
   pub fn term(self:*@This()) !i32{
       var result = try self.factor();
-      if(self.peek())|char|{
-          switch(char.type){
+      if(self.peek())|token|{
+          switch(token.type){
               .Operator => |op| {
-                  if(op == .Plus){
-                      self.advance();
-                      const right = try self.factor();
-                      result += right;
-                  }
                   if(op == .Star){
                       self.advance();
                       const right = try self.factor();
                       result = result * right;
-                  }
-                  if(op == .Minus){
-                      self.advance();
-                      const right = try self.factor();
-                      result = result - right;
-                      if(result < 0){
-                          return error.CantHandleNegativeValue;
-                      }
                   }
                   if(op == .Slash){
                       self.advance();
@@ -146,10 +133,33 @@ const Parser = struct {
       }
       return result;
   }
+  pub fn expression(self:*@This()) !i32{
+      var result = try self.term();
+      while(self.peek()) |token|{
+          switch(token.type) {
+              .Operator => |op|{
+                  if(op != .Plus and op != .Minus) break;
+
+                  self.advance();
+
+                  const right = try self.term();
+
+                  switch (op) {
+                      .Plus => {result = result + right;},
+                      .Minus => {result = result - right;},
+                      else => unreachable,
+                  }
+              },
+              else => break,
+          }
+      }//While
+      return result;
+  }
+
 };
 
 pub fn main() !void {
-    const source: []const u8 = "12 / 6";
+    const source: []const u8 = "12 / 6 + 2";
 
     var lexer: Lexer = .{
         .content = source,
@@ -174,15 +184,7 @@ pub fn main() !void {
     parser.cursor = 0;
     parser.token = token_buffer[0..token_count];
 
-    if(parser.term()) |res|{
-        print("The Result is : {d}\n", .{res});
-    }else |errs| switch (errs) {
-        error.CantHandleNegativeValue =>{
-            print("Can't Handle Negative Value",.{});
-        },
-        error.NotAPrecedence =>{
-            print("Please Provide Precedence (-,+,*,/)",.{});
-        },
-        else => {}
-    }
+    print("The Math Expression : {s}",.{source});
+    const exp = try parser.expression();
+    print("Result : {d}",.{exp});
 }
