@@ -123,6 +123,7 @@ const Parser = struct {
                   if(op == .Slash){
                       self.advance();
                       const right = try self.factor();
+                      if(right == 0) return error.DivideByZero;
                       result = @divTrunc(result,right);
                   }
               },
@@ -155,11 +156,15 @@ const Parser = struct {
       }//While
       return result;
   }
-
+  pub fn parse(self:*@This()) !i32{
+      const result = try self.expression();
+      if(self.peek() != null) return error.UnexpectedToken;
+      return result;
+  }
 };
-
 pub fn main() !void {
-    const source: []const u8 = "12 / 6 + 2";
+    // const source: []const u8 = "12 / 6 + 2";
+    const source: []const u8 = "5 / 0";
 
     var lexer: Lexer = .{
         .content = source,
@@ -185,6 +190,9 @@ pub fn main() !void {
     parser.token = token_buffer[0..token_count];
 
     print("The Math Expression : {s}",.{source});
-    const exp = try parser.expression();
-    print("Result : {d}",.{exp});
+    const result = parser.parse() catch |errs| {
+        err("Error : {s}",.{@errorName(errs)});
+        return;
+};
+    print("Result : {d}",.{result});
 }
