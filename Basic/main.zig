@@ -164,7 +164,7 @@ const Parser = struct {
 };
 pub fn main() !void {
     // const source: []const u8 = "12 / 6 + 2";
-    const source: []const u8 = "5 / 0";
+    const source: []const u8 = "9 + 9";
 
     var lexer: Lexer = .{
         .content = source,
